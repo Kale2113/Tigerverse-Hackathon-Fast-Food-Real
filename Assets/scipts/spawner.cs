@@ -91,7 +91,6 @@ public class PattyBoxBothHandsSpawner : MonoBehaviour
         if (rb != null)
         {
             rb.velocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
         }
 
         var grab = patty.GetComponent<XRGrabInteractable>();

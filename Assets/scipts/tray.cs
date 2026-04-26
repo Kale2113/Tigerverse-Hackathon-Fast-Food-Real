@@ -1,25 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-public class PattyTray : MonoBehaviour {
-    [Header("Setup")]
-    public Transform stackPosition; // Where the patties should stack
-    public float stackHeight = 0.1f; // The height at which each new patty is placed
+public class PattyTray : MonoBehaviour
+{
+    public Transform stackPosition;
+    public float stackHeight = 0.05f;
 
-    private List<GameObject> pattyStack = new List<GameObject>(); // A list to track the patties
+    private List<GameObject> stack = new();
 
-    // Add a patty to the tray
-    public void AddPattyToTray(GameObject patty) {
-        // Position the patty on top of the last one
-        Vector3 newPosition = stackPosition.position + new Vector3(0, pattyStack.Count * stackHeight, 0);
-        patty.transform.position = newPosition;
-        pattyStack.Add(patty); // Keep track of the patty in the stack
+    public void AddPattyToTray(GameObject patty)
+    {
+        if (!patty || !stackPosition) return;
+        if (stack.Contains(patty)) return;
 
-        // Optional: Make sure the patty's Rigidbody is set to Kinematic so it doesn't fall off
         Rigidbody rb = patty.GetComponent<Rigidbody>();
-        if (rb != null) {
+        if (rb)
+        {
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
             rb.isKinematic = true;
-            }
+            rb.useGravity = false;
         }
+
+        patty.transform.SetParent(stackPosition);
+
+        patty.transform.position =
+            stackPosition.position + Vector3.up * (stack.Count * stackHeight);
+
+        patty.transform.rotation = stackPosition.rotation;
+
+        stack.Add(patty);
     }
+}
